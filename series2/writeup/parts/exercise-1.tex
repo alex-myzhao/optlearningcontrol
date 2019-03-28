@@ -1,0 +1,202 @@
+\section*{Exercise 1: Dynamic Programming}
+
+\subsection*{(a) Use the dynamic programming algorithm to solve the finite horizon optimal control problem that minimizes \( J \), for \( N = 3 \) and \( x_0 = 5 \).}
+
+According to the cost function, we can define the final cost for this problem:
+\[ J_N(x_N) = x_N^2 \]
+
+And define the cost-to-go starting at state \( x_n \) for \( n \in [0, N-1] \):
+\[ J_n(x_n) = \min_{u_n} ((x_n^2 + u_n^2) + J_{n+1}(x_n + u_n)) \]
+
+So the optimal cost \( J^* = \min_{u_0, \ldots, u_{N-1}}(x_N^2 + \sum_{k=0}^{N-1} (x_k^2 + u_k^2)) \) is equivalent to the cost-to-go starting at initial state \( x_0 \), which is \( J_0(x_0) \).
+
+Then, we can apply the dynamic programming algorithm to find the optimal cost, under the constraints \( \forall n \in [0, N], \ x_n \in [0, 5] \).
+
+\subsubsection*{1. Start from final state, when \( n = 3 \):}
+Compute the final cost for each final state:
+\[
+    J_3(0) = 0 \quad
+    J_3(1) = 1 \quad
+    J_3(2) = 4 \quad
+    J_3(3) = 9 \quad
+    J_3(4) = 16 \quad
+    J_3(5) = 25
+\]
+
+\subsubsection*{2. When \( n = 2 \):}
+Compute cost-to-go at time \( 2 \) for each possible state:
+\[ J_2(x_2) = \min_{u_2} ((x_2^2 + u_2^2) + J_{3}(x_2 + u_2)) \]
+\[ J_2(0) = \min_{u_2} ((0^2 + u_2^2) + J_{3}(0 + u_2)) = \min \{ 0, 2, 8, 18, 32, 50 \} = 0 \quad (u_2 = 0) \]
+\[ J_2(1) = \min_{u_2} ((1^2 + u_2^2) + J_{3}(1 + u_2)) = \min \{ 2, 2, 6, 14, 26, 42 \} = 2 \quad (u_2 = -1, 0) \]
+\[ J_2(2) = \min_{u_2} ((2^2 + u_2^2) + J_{3}(2 + u_2)) = \min \{ 8, 6, 8, 14, 24, 38 \} = 6 \quad (u_2 = -1) \]
+\[ J_2(3) = \min_{u_2} ((3^2 + u_2^2) + J_{3}(3 + u_2)) = \min \{ 18, 14, 14, 18, 26, 38 \} = 14 \quad (u_2 = -2, -1) \]
+\[ J_2(4) = \min_{u_2} ((4^2 + u_2^2) + J_{3}(4 + u_2)) = \min \{ 32, 26, 24, 26, 32, 42 \} = 24 \quad (u_2 = -2) \]
+\[ J_2(5) = \min_{u_2} ((5^2 + u_2^2) + J_{3}(5 + u_2)) = \min \{ 50, 42, 38, 38, 42, 50 \} = 38 \quad (u_2 = -3, -2) \]
+
+\subsubsection*{3. When \( n = 1 \):}
+Compute cost-to-go at time \( 1 \) for each possible state:
+\[ J_1(x_1) = \min_{u_1} ((x_1^2 + u_1^2) + J_{2}(x_1 + u_1)) \]
+\[ J_1(0) = \min_{u_1} ((0^2 + u_1^2) + J_{2}(0 + u_1)) = \min \{ 0, 3, 10, 23, 40, 63 \} = 0 \quad (u_1 = 0) \]
+\[ J_1(1) = \min_{u_1} ((1^2 + u_1^2) + J_{2}(1 + u_1)) = \min \{ 2, 3, 8, 19, 34, 55 \} = 2 \quad (u_1 = -1) \]
+\[ J_1(2) = \min_{u_1} ((2^2 + u_1^2) + J_{2}(2 + u_1)) = \min \{ 8, 7, 10, 19, 32, 51 \} = 7 \quad (u_1 = -1) \]
+\[ J_1(3) = \min_{u_1} ((3^2 + u_1^2) + J_{2}(3 + u_1)) = \min \{ 18, 15, 16, 23, 34, 51 \} = 15 \quad (u_1 = -2) \]
+\[ J_1(4) = \min_{u_1} ((4^2 + u_1^2) + J_{2}(4 + u_1)) = \min \{ 32, 27, 26, 31, 40, 55 \} = 26 \quad (u_1 = -2) \]
+\[ J_1(5) = \min_{u_1} ((5^2 + u_1^2) + J_{2}(5 + u_1)) = \min \{ 50, 43, 40, 43, 50, 63 \} = 40 \quad (u_1 = -3) \]
+
+\subsubsection*{4. When \( n = 0 \):}
+Compute cost-to-go at time \( 0 \) for state \( x_0 = 5 \):
+\[ J_0(x_0) = \min_{u_0} ((x_0^2 + u_0^2) + J_1(x_0 + u_0)) \]
+\[ J_0(5) = \min_{u_0} ((5^2 + u_0^2) + J_1(5 + u_0)) = \min \{ 50, 43, 41, 44, 52, 65 \} = 41 \quad (u_0 = -3) \]
+
+So the optimal cost will be \( J^* = J_0(x_0=5) = 41 \), and the optimal sequences of \( x_k \) and \( u_k \) are \( (x_0=5, x_1=2, x_2=1, x_3=0) \) and \( (u_0=-3, u_1=-1, u_2=-1) \) or \( (x_0=5, x_1=2, x_2=1, x_3=1) \) and \( (u_0=-3, u_1=-1, u_2=0) \). The different steps are also shown above.
+
+
+\subsection*{(b) Consider the same problem as (a) with the additional constraint \( x_3 = 5 \) on the final state.}
+In this case, the final state space becomes \( \{ 5 \} \). Recompute backwards for each state.
+
+\subsubsection*{1. Start from final state, when \( n = 3 \):}
+Compute the final cost for each final state:
+\[ J_3(5) = 25 \]
+
+\subsubsection*{2. When \( n = 2 \):}
+\[ J_2(x_2) = \min_{u_2} ((x_2^2 + u_2^2) + J_{3}(x_2 + u_2)) \]
+\[ J_2(0) = \min_{u_2} ((0^2 + u_2^2) + J_{3}(0 + u_2)) = ((0^2 + 5^2) + J_{3}(0 + 5)) = 50 \quad (u_2 = 5) \]
+\[ J_2(1) = \min_{u_2} ((1^2 + u_2^2) + J_{3}(1 + u_2)) = ((1^2 + 4^2) + J_{3}(1 + 4)) = 42 \quad (u_2 = 4) \]
+\[ J_2(2) = \min_{u_2} ((2^2 + u_2^2) + J_{3}(2 + u_2)) = ((2^2 + 3^2) + J_{3}(2 + 3)) = 38 \quad (u_2 = 3) \]
+\[ J_2(3) = \min_{u_2} ((3^2 + u_2^2) + J_{3}(3 + u_2)) = ((3^2 + 2^2) + J_{3}(3 + 2)) = 38 \quad (u_2 = 2) \]
+\[ J_2(4) = \min_{u_2} ((4^2 + u_2^2) + J_{3}(4 + u_2)) = ((4^2 + 1^2) + J_{3}(4 + 1)) = 42 \quad (u_2 = 1) \]
+\[ J_2(5) = \min_{u_2} ((5^2 + u_2^2) + J_{3}(5 + u_2)) = ((5^2 + 0^2) + J_{3}(5 + 0)) = 50 \quad (u_2 = 0) \]
+
+\subsubsection*{3. When \( n = 1 \):}
+Compute cost-to-go at time \( 1 \) for each possible state:
+\[ J_1(x_1) = \min_{u_1} ((x_1^2 + u_1^2) + J_{2}(x_1 + u_1)) \]
+\[ J_1(0) = \min_{u_1} ((0^2 + u_1^2) + J_{2}(0 + u_1)) = \min \{ 50, 43, 42, 47, 58, 75 \} = 42 \quad (u_1 = 2) \]
+\[ J_1(1) = \min_{u_1} ((1^2 + u_1^2) + J_{2}(1 + u_1)) = \min \{ 52, 43, 40, 43, 52, 67 \} = 40 \quad (u_1 = 1) \]
+\[ J_1(2) = \min_{u_1} ((2^2 + u_1^2) + J_{2}(2 + u_1)) = \min \{ 58, 47, 42, 43, 50, 63 \} = 42 \quad (u_1 = 0) \]
+\[ J_1(3) = \min_{u_1} ((3^2 + u_1^2) + J_{2}(3 + u_1)) = \min \{ 68, 55, 48, 47, 52, 63 \} = 47 \quad (u_1 = 0) \]
+\[ J_1(4) = \min_{u_1} ((4^2 + u_1^2) + J_{2}(4 + u_1)) = \min \{ 82, 67, 58, 55, 58, 67 \} = 55 \quad (u_1 = -1) \]
+\[ J_1(5) = \min_{u_1} ((5^2 + u_1^2) + J_{2}(5 + u_1)) = \min \{ 100, 83, 72, 67, 68, 75 \} = 67 \quad (u_1 = -2) \]
+
+\subsubsection*{4. When \( n = 0 \):}
+Compute cost-to-go at time \( 0 \) for state \( x_0 = 5 \):
+\[ J_0(x_0) = \min_{u_0} ((x_0^2 + u_0^2) + J_1(x_0 + u_0)) \]
+\[ J_0(5) = \min_{u_0} ((5^2 + u_0^2) + J_1(5 + u_0)) = \min \{ 92, 81, 76, 76, 81, 92 \} = 76 \quad (u_0 = -3, -2) \]
+
+So with the additional constraint, the optimal cost will be \( J^* = J_0(x_0=5) = 76 \), and the optimal sequences of \( x_k \) and \( u_k \) are \( (x_0=5, x_1=2, x_2=2, x_3=5) \) and \( (u_0=-3, u_1=0, u_2=3) \) or \( (x_0=5, x_1=3, x_2=3, x_3=5) \) and \( (u_0=-2, u_1=0, u_2=2) \). The different steps are also shown above.
+
+
+\subsection*{(c) Consider the dynamic system of question (a) with a stochastic disturbance \( w_n \) added. The disturbance takes the values \( -1 \) and \( 1 \) with equal probabilities for all \( x_n \) and \( u_n \), except if \( x_n + u_n \) is equal to \( 0 \) or \( 5 \), in which case \( w_n = 0 \) with probability \( 1 \).}
+The system dynamic becomes:
+\[ x_{n+1} = x_n + u_n + w_n \]
+
+where \( w_n \) is a random variable, so we need to minimize the expectation of cost at different time. So change our cost-to-go into:
+\[ J_n(x_n) = \min_{u_n} \expect{w_n} ((x_n^2 + u_n^2) + J_{n+1}(x_n + u_n + w_n)) \]
+
+And the optimal cost now is also equivalent with our new cost-to-go at time \( 0 \). Then, similarly, we can use dynamic programming algorithm to compute cost-to-go at different time backwards.
+
+\subsubsection*{1. Start from final state, when \( n = 3 \):}
+Compute the final cost for each final state: (same as the previous problem)
+\[
+    J_3(0) = 0 \quad
+    J_3(1) = 1 \quad
+    J_3(2) = 4 \quad
+    J_3(3) = 9 \quad
+    J_3(4) = 16 \quad
+    J_3(5) = 25
+\]
+
+\subsubsection*{2. When \( n = 2 \):}
+Compute cost-to-go at time \( 2 \) for each possible state:
+\[ J_2(x_2) = \min_{u_2} \expect{w_2} ((x_2^2 + u_2^2) + J_3(x_2 + u_2 + w_2)) \]
+\[
+    J_2(0) = \min_{u_2} ((0^2 + u_2^2) + J_3(0 + u_2 + w_2))
+    = 0.5 \times \min \{ 0+0, 1+5, 5+13, 13+25, 25+41, 50+50 \}
+    = 0
+\]
+\[
+    J_2(1) = \min_{u_2} ((1^2 + u_2^2) + J_3(1 + u_2 + w_2))
+    = 0.5 \times \min \{ 2+2, 1+5, 3+11, 9+21, 19+35, 42+42 \}
+    = 2
+\]
+\[
+    J_2(2) = \min_{u_2} ((2^2 + u_2^2) + J_3(2 + u_2 + w_2))
+    = 0.5 \times \min \{ 8+8, 5+9, 5+13, 9+21, 17+33, 38+38 \}
+    = 7
+\]
+\[
+    J_2(3) = \min_{u_2} ((3^2 + u_2^2) + J_3(3 + u_2 + w_2))
+    = 0.5 \times \min \{ 18+18, 13+17, 11+19, 13+25, 19+35, 38+38 \}
+    = 15
+\]
+\[
+    J_2(4) = \min_{u_2} ((4^2 + u_2^2) + J_3(4 + u_2 + w_2))
+    = 0.5 \times \min \{ 32+32, 25+29, 21+29, 21+33, 25+41, 42+42  \}
+    = 25
+\]
+\[
+    J_2(5) = \min_{u_2} ((5^2 + u_2^2) + J_3(5 + u_2 + w_2))
+    = 0.5 \times \min \{ 50+50, 41+45, 35+43, 33+45, 35+51, 50+50 \}
+    = 39
+\]
+
+The optimal policy for stage \( 2 \) is:
+\[ \mu^*_2(0)=0 \quad \mu^*_2(1)=-1 \quad \mu^*_2(2)=-1 \quad \mu^*_2(3)=\{ -2, -1 \} \quad \mu^*23(4)=-2 \quad \mu^*_2(5)=\{ -3, -2 \} \]
+
+\subsubsection*{3. When \( n = 1 \):}
+\[ J_1(x_1) = \min_{u_1} \expect{w_1} ((x_1^2 + u_1^2) + J_2(x_1 + u_1 + w_1)) \]
+\[
+    J_1(0) = \min_{u_1} ((0^2 + u_1^2) + J_2(0 + u_1 + w_1))
+    = 0.5 \times \min \{ 0+0, 1+8, 6+19, 16+34, 31+55, 64+64 \}
+    = 0
+\]
+\[
+    J_1(1) = \min_{u_1} ((1^2 + u_1^2) + J_2(1 + u_1 + w_1))
+    = 0.5 \times \min \{ 2+2, 1+8, 4+17, 12+30, 25+49, 56+56 \}
+    = 2
+\]
+\[
+    J_1(2) = \min_{u_1} ((2^2 + u_1^2) + J_2(2 + u_1 + w_1))
+    = 0.5 \times \min \{ 8+8, 5+12, 6+19, 12+30, 23+47, 52+52 \}
+    = 8
+\]
+\[
+    J_1(3) = \min_{u_1} ((3^2 + u_1^2) + J_2(3 + u_1 + w_1))
+    = 0.5 \times \min \{ 18+18, 13+20, 12+25, 16+34, 25+49, 52+52 \}
+    = 16.5
+\]
+\[
+    J_1(4) = \min_{u_1} ((4^2 + u_1^2) + J_2(4 + u_1 + w_1))
+    = 0.5 \times \min \{ 32+32, 25+32, 22+35, 24+42, 31+55, 56+56 \}
+    = 28.5
+\]
+\[
+    J_1(5) = \min_{u_1} ((5^2 + u_1^2) + J_2(5 + u_1 + w_1))
+    = 0.5 \times \min \{ 50+50, 41+48, 36+49, 36+60, 41+65, 64+64 \}
+    = 42.5
+\]
+
+The optimal policy for stage \( 1 \) is:
+\[
+    \mu^*_1(0)=0 \quad
+    \mu^*_1(1)=-1 \quad
+    \mu^*_1(2)=-2 \quad
+    \mu^*_1(3)=-2 \quad
+    \mu^*_1(4)=\{ -3, -2 \} \quad
+    \mu^*_1(5)=-3
+\]
+
+\subsubsection*{4. When \( n = 0 \):}
+Compute cost-to-go at time \( 0 \) for state \( x_0 = 5 \):
+\[ J_0(x_0) = \min_{u_0} \expect{w_0} ((x_0^2 + u_0^2) + J_1(x_0 + u_0 + w_0)) \]
+\[
+    J_0(5)
+    = 0.5 \times \min \{ 50+50, 41+49, 36+50.5, 37+57.5, 42.5+68.5, 67.5+67.5 \}
+    = 43.25
+\]
+The optimal policy for stage \( 0 \) is:
+\[
+    \mu^*_0(5)=-3
+\]
+
+So the optimal policy is \( \pi^* = \{ \mu_0^*, \mu_1^*, \mu_2^* \} \).
+And the optimal expected cost is \( J^* = J_0(x_0) = 43.25 \)

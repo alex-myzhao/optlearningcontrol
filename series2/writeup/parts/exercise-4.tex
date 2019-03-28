@@ -1,0 +1,236 @@
+\section*{Exercise 4: Cart-Pole Model}
+
+\subsection*{Answer for Question 1}
+The dynamic equations of the Cart-Pole model are written as
+\[
+    \dot{x} = v
+\]
+\[
+    \dot{v} = \frac{f + m_p \sin\theta (l \omega^2 + g \cos \theta)}{m_c + m_p \sin^2 \theta}
+\]
+\[
+    \dot{\theta} = \omega
+\]
+\[
+    \dot{\omega} = \frac{-f\cos\theta -m_p l \omega^2 \cos\theta\sin\theta - (m_c + m_p)g \sin\theta}{l(m_c + m_p \sin^2 \theta)}
+\]
+
+Written in matrix form:
+\[
+    \dot{X} = F(X, U)
+\]
+
+where \(X\), \(U\) and \(F\) here are:
+
+\[
+    X =
+    \begin{bmatrix}
+        x \\
+        v \\
+        \theta \\
+        \omega
+    \end{bmatrix}
+    \quad
+    U =
+    \begin{bmatrix}
+        f
+    \end{bmatrix}
+\]
+
+\[
+    F(X, U) =
+    \begin{bmatrix}
+        v \\[0.8em]
+        \frac{f + m_p \sin\theta (l \omega^2 + g \cos \theta)}{m_c + m_p \sin^2 \theta} \\[0.6em]
+        \omega \\[0.8em]
+        \frac{-f\cos\theta -m_p l \omega^2 \cos\theta\sin\theta - (m_c + m_p)g \sin\theta}{l(m_c + m_p \sin^2 \theta)}
+    \end{bmatrix}
+    \triangleq
+    \begin{bmatrix}
+        F_1(X, U) \\
+        F_2(X, U) \\
+        F_3(X, U) \\
+        F_4(X, U)
+    \end{bmatrix}
+\]
+
+Use Taylor expansion around \( (\bar{X}, \bar{U}) \), that is \( \bar{x}=0, \bar{v}=0, \bar{\theta}=\pi, \bar{\omega}=0, \bar{f}=0 \):
+\[
+    F(\bar{X} + \Delta X, \bar{U} + \Delta U)
+    \approx F(\bar{X}, \bar{U}) + {\Big[ \frac{\partial F}{\partial X} \Big]}_{\bar{X}, \bar{U}} \Delta X + {\Big[ \frac{\partial F}{\partial U} \Big]}_{\bar{X}, \bar{U}} \Delta U
+\]
+
+\[
+    \dot{\bar{X}} + \Delta \dot{X}
+    \approx F(\bar{X}, \bar{U}) + {\Big[ \frac{\partial F}{\partial X} \Big]}_{\bar{X}, \bar{U}} \Delta X + {\Big[ \frac{\partial F}{\partial U} \Big]}_{\bar{X}, \bar{U}} \Delta U
+\]
+
+\[
+    \Delta \dot{X}
+    \approx {\Big[ \frac{\partial F}{\partial X} \Big]}_{\bar{X}, \bar{U}} \Delta X + {\Big[ \frac{\partial F}{\partial U} \Big]}_{\bar{X}, \bar{U}} \Delta U
+\]
+
+Compute the Jacobian matrices in this equation:
+
+\[
+    \frac{\partial F}{\partial X} =
+    \begin{bmatrix}
+        \frac{\partial F_1}{\partial x} &
+        \frac{\partial F_1}{\partial v} &
+        \frac{\partial F_1}{\partial \theta} &
+        \frac{\partial F_1}{\partial \omega} \\[0.8em]
+        \frac{\partial F_2}{\partial x} &
+        \frac{\partial F_2}{\partial v} &
+        \frac{\partial F_2}{\partial \theta} &
+        \frac{\partial F_2}{\partial \omega} \\[0.8em]
+        \frac{\partial F_3}{\partial x} &
+        \frac{\partial F_3}{\partial v} &
+        \frac{\partial F_3}{\partial \theta} &
+        \frac{\partial F_3}{\partial \omega} \\[0.8em]
+        \frac{\partial F_4}{\partial x} &
+        \frac{\partial F_4}{\partial v} &
+        \frac{\partial F_4}{\partial \theta} &
+        \frac{\partial F_4}{\partial \omega}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        0 & 1 & 0 & 0 \\[0.8em]
+        0 & 0 & \frac{m_p g}{m_c} & 0 \\[0.8em]
+        0 & 0 & 0 & 1 \\[0.8em]
+        0 & 0 & \frac{m_c g}{(m_c + m_p) l} & 0
+    \end{bmatrix}
+\]
+
+\[
+    \frac{\partial F}{\partial U}
+    =
+    \begin{bmatrix}
+        \frac{\partial F_1}{\partial f} \\[0.8em]
+        \frac{\partial F_2}{\partial f} \\[0.8em]
+        \frac{\partial F_3}{\partial f} \\[0.8em]
+        \frac{\partial F_4}{\partial f}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        0 \\[0.8em]
+        \frac{1}{m_c} \\[0.8em]
+        0 \\[0.8em]
+        \frac{1}{m_c l}
+    \end{bmatrix}
+\]
+
+Then discretize the system with one-step Euler integration:
+\[
+    \Delta X_{n+1} =
+    \Delta X_n + {\Big[ \frac{\partial F}{\partial X} \Big]}_{\bar{X}, \bar{U}} \Delta t \Delta X_n + {\Big[ \frac{\partial F}{\partial U} \Big]}_{\bar{X}, \bar{U}} \Delta t \Delta U
+\]
+
+\[
+    \begin{bmatrix}
+        \tilde{x}_{n+1} \\
+        \tilde{v}_{n+1} \\
+        \tilde{\theta}_{n+1} \\
+        \tilde{\omega}_{n+1}
+    \end{bmatrix}
+    =
+    \Bigg(
+        I
+        +
+        \begin{bmatrix}
+            0 & \Delta t & 0 & 0 \\
+            0 & 0 & \frac{m_p g}{m_c} \Delta t & 0 \\
+            0 & 0 & 0 & \Delta t \\
+            0 & 0 & \frac{(m_c + m_p) g}{m_c l} \Delta t & 0
+        \end{bmatrix}
+    \Bigg)
+    \begin{bmatrix}
+        \tilde{x}_n \\
+        \tilde{v}_n \\
+        \tilde{\theta}_n \\
+        \tilde{\omega}_n
+    \end{bmatrix}
+    +
+    \begin{bmatrix}
+        0 \\
+        \frac{1}{m_c} \Delta t \\
+        0 \\
+        \frac{1}{m_c l} \Delta t
+    \end{bmatrix}
+    \tilde{f}_n
+\]
+
+which can be written as:
+\[
+    \begin{bmatrix}
+        \tilde{x}_{n+1} \\
+        \tilde{v}_{n+1} \\
+        \tilde{\theta}_{n+1} \\
+        \tilde{\omega}_{n+1}
+    \end{bmatrix}
+    =
+    A
+    \begin{bmatrix}
+        \tilde{x}_{n} \\
+        \tilde{v}_{n} \\
+        \tilde{\theta}_{n} \\
+        \tilde{\omega}_{n}
+    \end{bmatrix}
+    + B \tilde{f}_n
+\]
+
+where
+\[
+    A =
+    \begin{bmatrix}
+        1 & \Delta t & 0 & 0 \\
+        0 & 1 & \frac{m_p g}{m_c} \Delta t & 0 \\
+        0 & 0 & 1 & \Delta t \\
+        0 & 0 & \frac{(m_c + m_p) g}{m_c l} \Delta t & 1
+    \end{bmatrix}
+    \quad
+    B =
+    \begin{bmatrix}
+        0 \\
+        \frac{1}{m_c} \Delta t \\
+        0 \\
+        \frac{1}{m_c l} \Delta t
+    \end{bmatrix}
+\]
+
+
+\subsection*{Answer for Question 2}
+
+\subsubsection*{Write a cost function that will help stabilize the resting position.}
+Now, we can write down the cost function:
+\[
+    L = \tilde{X}_N^{\mathsf{T}} Q \tilde{X}_N + \sum_{k=0}^{N-1} (\tilde{X}_{n}^{\mathsf{T}} Q \tilde{X}_{n} + \tilde{U}_{n}^{\mathsf{T}} R \tilde{U}_{n})
+\]
+
+where \( Q \) and \( R \) can be customized.
+
+And the regulator for the original nonlinear dynamic becomes:
+\[
+    \min_{\tilde{U_0}, \ldots, \tilde{U_{N-1}}} L(\tilde{X}, \tilde{U})
+\]
+\[
+    s.t. \quad \tilde{X}_{n+1} = A \tilde{X}_n + B \tilde{U}_n
+\]
+
+\subsubsection*{How would you (approximately) solve this optimal control problem?}
+We can use iterative method to solve the Ricatti equation of the linearized and discretized problem, then use the solution to approximate the actual solution.
+
+\subsubsection*{What will be the form of the optimal controller $f_n$?}
+The form of the optimal controller \(f_n\) will be:
+\[
+    f_n = \bar{f} + K_n
+    \begin{bmatrix}
+        x_n - \bar{x} \\
+        v_n - \bar{v} \\
+        \theta_n - \bar{\theta} \\
+        \omega_n - \bar{\omega}
+    \end{bmatrix}
+\]
+
+
+\subsection*{Answer for Question 3}
+Answered in the Jupyter notebook \textit{Cart-Pole Model.ipynb}.

@@ -1,0 +1,8 @@
+.DS_Store
+.vscode
+.ipynb_checkpoints
+*.aux
+*.gz
+*.fdb_latexmk
+*.fls
+_minted-*

@@ -1,0 +1,47 @@
+\documentclass{article}
+
+\usepackage{mytex}
+
+\newcommand{\HRule}[1]{\rule{\linewidth}{#1}}
+
+\makeatletter
+\def\printtitle{
+    {\centering \@title\par}}
+\makeatother
+
+\makeatletter
+\def\printauthor{
+    {\centering \large \@author}}
+\makeatother
+
+\title{
+    \normalsize \textsc{} \\[2.0cm]
+    \HRule{1pt} \\[0.3cm]
+    \LARGE \textbf{Optimal Control and Reinforcement Learning}
+    \HRule{1pt} \\[0.5cm]
+    \Large Homework 2 \\[0.5cm]
+    \normalsize \today            % Todays date
+}
+
+\author{
+    Mingyu Zhao \\
+    New York University \\
+    Tandon School of Engineering \\
+    \texttt{m.zhao@nyu.edu} \\
+}
+
+\begin{document}
+
+\thispagestyle{empty}
+\printtitle%
+      \vfill
+\printauthor%
+\newpage
+
+\import{parts/}{exercise-1.tex}
+\import{parts/}{exercise-2.tex}
+\import{parts/}{exercise-3.tex}
+\import{parts/}{exercise-4.tex}
+\import{parts/}{exercise-5.tex}
+
+\end{document}

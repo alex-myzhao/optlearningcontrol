@@ -1,0 +1,36 @@
+\ProvidesPackage{mytex}
+
+% Page template
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0 in}
+\setlength{\parskip}{0.1 in}
+
+% Basic Packages
+\usepackage{import}
+\usepackage{enumerate}
+
+% Mathematics Equations
+\usepackage{amsmath,amsfonts,graphicx}
+\usepackage{amssymb}
+
+% Color
+\usepackage{color,xcolor}
+
+% Code Blocks
+\usepackage{minted}
+\setminted[sql]{
+    breaklines=true,
+    linenos=true
+}
+\setminted[matlab]{
+    breaklines=true,
+    linenos=true
+}
+
+% Self-defined Commands
+\newcommand{\expect}[1]{\mathop{\mathbb{E}}_{#1}}
